@@ -11,6 +11,7 @@ use ItkDev\AdgangsstyringBundle\Event\AccessControlEvent;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class EventSubscriber implements EventSubscriberInterface
 {
@@ -56,8 +57,8 @@ class EventSubscriber implements EventSubscriberInterface
         $repository = $this->em->getRepository($this->className);
         $users = $repository->findAll();
 
-        // Compute getter method
-        $nameOfGetter = 'get'.ucfirst($this->username);
+        // Create PropertyAccessor
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         // setup cache
         $this->cache = new FilesystemAdapter();
@@ -67,20 +68,8 @@ class EventSubscriber implements EventSubscriberInterface
         $systemUsersArray = [];
 
         foreach ($users as $user){
-
-            // Ensure getter exists
-            if (!method_exists($user, $nameOfGetter)) {
-                $message = sprintf('Getter %s not found in %s.', $nameOfGetter, get_class($user));
-                throw new \Exception($message);
-            }
-
-            // Call getter
-            $userData = call_user_func([
-                $user,
-                $nameOfGetter
-            ]);
-
-            // Add to removal array
+            $userData = $propertyAccessor->getValue($user, $this->username);
+            // Add to potential removal array
             array_push($systemUsersArray, $userData);
         }
         var_dump($systemUsersArray);
