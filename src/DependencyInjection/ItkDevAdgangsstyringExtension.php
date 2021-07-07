@@ -24,10 +24,10 @@ class ItkDevAdgangsstyringExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $options = [
-            'tenantId' => $config['tenant_id'],
-            'clientId' => $config['client_id'],
-            'clientSecret' => $config['client_secret'],
-            'groupId' => $config['group_id'],
+            'tenantId' => $config['adgangsstyring_options']['tenant_id'],
+            'clientId' => $config['adgangsstyring_options']['client_id'],
+            'clientSecret' => $config['adgangsstyring_options']['client_secret'],
+            'groupId' => $config['adgangsstyring_options']['group_id'],
         ];
 
         $definition = $container->getDefinition(AccessControlCommand::class);
