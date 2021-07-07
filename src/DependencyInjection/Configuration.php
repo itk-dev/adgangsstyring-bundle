@@ -31,6 +31,12 @@ class Configuration implements ConfigurationInterface
                             ->cannotBeEmpty()->end()
                     ->end()
                 ->end()
+                ->scalarNode('user_class')
+                    ->info('User class name')
+                    ->cannotBeEmpty()->end()
+               ->scalarNode('username')
+                    ->info('Unique username')
+                    ->cannotBeEmpty()->end()
             ->end();
 
         return $treeBuilder;

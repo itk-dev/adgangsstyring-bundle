@@ -35,6 +35,8 @@ class ItkDevAdgangsstyringExtension extends Extension
 
         $definition = $container->getDefinition(AccessControlCommand::class);
         $definition->replaceArgument('$options', $options);
+        $definition->replaceArgument('$userClass', $config['user_class']);
+        $definition->replaceArgument('$username', $config['username']);
     }
 
     /**
