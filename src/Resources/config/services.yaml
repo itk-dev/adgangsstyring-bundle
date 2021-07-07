@@ -17,3 +17,5 @@ services:
     ItkDev\AdgangsstyringBundle\Command\AccessControlCommand:
         arguments:
             $options: ~
+            $userClass: ~
+            $username: ~

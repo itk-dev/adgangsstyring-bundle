@@ -3,6 +3,8 @@
 
 namespace ItkDev\AdgangsstyringBundle\Command;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\Adgangsstyring\Controller;
 use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
 use Symfony\Component\Console\Command\Command;
@@ -12,14 +14,19 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class AccessControlCommand extends Command
 {
-
     private $options;
+    private $em;
+    private $userClass;
+    private $username;
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'adgangsstyring:run';
 
-    public function __construct(array $options, string $name = null)
+    public function __construct(array $options, EntityManagerInterface $em, string $userClass, string $username, string $name = null)
     {
         $this->options = $options;
+        $this->em = $em;
+        $this->userClass = $userClass;
+        $this->username = $username;
         parent::__construct($name);
     }
 
@@ -31,7 +38,7 @@ class AccessControlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $subscriber = new EventSubscriber();
+        $subscriber = new EventSubscriber($this->em, $this->userClass, $this->username);
         $eventDispatcher = new EventDispatcher();
         $eventDispatcher->addSubscriber($subscriber);
         $controller = new Controller($eventDispatcher, $this->options);
