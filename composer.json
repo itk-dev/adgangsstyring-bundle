@@ -1,6 +1,7 @@
 {
     "name": "itkdev/adgangssytring-bundle",
     "type": "symfony-bundle",
+    "description": "Adgangsstyring bundle",
     "license": "MIT",
     "require": {
         "php": "^7.2",
