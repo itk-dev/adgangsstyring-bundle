@@ -1,0 +1,23 @@
+{
+    "name": "itkdev/adgangssytring-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "require": {
+        "php": "^7.2",
+        "itkdev/adgangsstyring": "dev-develop",
+        "symfony/framework-bundle": "^5.2",
+        "symfony/yaml": "^5.2",
+        "symfony/console": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "ItkDev\\AdgangsstyringBundle\\": "src/"
+        }
+    },
+    "repositories": {
+        "itkdev/adgangsstyring": {
+            "type": "path",
+            "url": "../adgangsstyring"
+        }
+    }
+}
