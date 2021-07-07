@@ -14,9 +14,9 @@ class EventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            StartEvent::class => 'start',
-            UserDataEvent::class => 'userData',
-            CommitEvent::class => 'commit',
+            StartEvent::class => ['start'],
+            UserDataEvent::class => ['userData'],
+            CommitEvent::class => ['commit'],
         ];
     }
 
@@ -25,15 +25,15 @@ class EventSubscriber implements EventSubscriberInterface
      */
     public function start(StartEvent $event)
     {
-
+        //var_dump('starterEvent');
     }
 
     /**
      * Handle user data
      */
-    public function userDate(UserDataEvent $event)
+    public function userData(UserDataEvent $event)
     {
-
+        //var_dump('userDataEvent');
     }
 
     /**
@@ -41,6 +41,6 @@ class EventSubscriber implements EventSubscriberInterface
      */
     public function commit(CommitEvent $event)
     {
-
+        //var_dump('commitEvent');
     }
 }

@@ -15,6 +15,5 @@ services:
     # please note that last definitions always *replace* previous ones
 
     ItkDev\AdgangsstyringBundle\Command\AccessControlCommand:
-        public: true
         arguments:
             $options: ~
