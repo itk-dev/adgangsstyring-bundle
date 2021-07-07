@@ -4,6 +4,7 @@
 namespace ItkDev\AdgangsstyringBundle\Command;
 
 use ItkDev\Adgangsstyring\Controller;
+use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,8 +31,12 @@ class AccessControlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $subscriber = new EventSubscriber();
         $eventDispatcher = new EventDispatcher();
+        $eventDispatcher->addSubscriber($subscriber);
         $controller = new Controller($eventDispatcher, $this->options);
+
+        $controller->run();
         return Command::SUCCESS;
     }
 }

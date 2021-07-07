@@ -3,10 +3,13 @@
 namespace ItkDev\AdgangsstyringBundle\DependencyInjection;
 
 use ItkDev\AdgangsstyringBundle\Command\AccessControlCommand;
+use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\RegisterServiceSubscribersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 
 class ItkDevAdgangsstyringExtension extends Extension
 {
