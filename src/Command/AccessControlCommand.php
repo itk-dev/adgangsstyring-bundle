@@ -3,8 +3,8 @@
 
 namespace ItkDev\AdgangsstyringBundle\Command;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Client;
 use ItkDev\Adgangsstyring\Controller;
 use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
 use Symfony\Component\Console\Command\Command;
@@ -41,9 +41,12 @@ class AccessControlCommand extends Command
         $subscriber = new EventSubscriber($this->em, $this->userClass, $this->username);
         $eventDispatcher = new EventDispatcher();
         $eventDispatcher->addSubscriber($subscriber);
-        $controller = new Controller($eventDispatcher, $this->options);
+
+        $client = new Client();
+        $controller = new Controller($eventDispatcher, $client, $this->options);
 
         $controller->run();
+
         return Command::SUCCESS;
     }
 }
