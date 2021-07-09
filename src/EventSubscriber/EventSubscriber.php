@@ -72,7 +72,6 @@ class EventSubscriber implements EventSubscriberInterface
             // Add to potential removal array
             array_push($systemUsersArray, $userData);
         }
-        var_dump($systemUsersArray);
 
         // Save array of users marked for removal
         $systemUsers->set($systemUsersArray);
@@ -116,7 +115,5 @@ class EventSubscriber implements EventSubscriberInterface
         $accessControlEvent = new AccessControlEvent($systemUsersArray);
 
         $dispatcher->dispatch($accessControlEvent);
-
-        var_dump($systemUsersArray);
     }
 }
