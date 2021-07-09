@@ -22,5 +22,23 @@
             "type": "path",
             "url": "../adgangsstyring"
         }
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
+    },
+
+    "scripts": {
+        "check-coding-standards": [
+            "vendor/bin/phpcs --standard=phpcs.xml.dist"
+        ],
+        "apply-coding-standards": [
+            "vendor/bin/phpcbf --standard=phpcs.xml.dist"
+        ],
+        "install-codestandards": [
+            "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+        ],
+        "post-install-cmd": [
+            "@install-codestandards"
+        ]
     }
 }
