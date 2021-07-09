@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ItkDev\AdgangsstyringBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;

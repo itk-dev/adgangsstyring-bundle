@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ItkDev\AdgangsstyringBundle\EventSubscriber;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,7 +66,7 @@ class EventSubscriber implements EventSubscriberInterface
         // Array for users marked for potential removal
         $systemUsersArray = [];
 
-        foreach ($users as $user){
+        foreach ($users as $user) {
             $userData = $propertyAccessor->getValue($user, $this->username);
             // Add to potential removal array
             array_push($systemUsersArray, $userData);
@@ -88,7 +87,7 @@ class EventSubscriber implements EventSubscriberInterface
         $systemUsersArray = $systemUsers->get();
 
         // Run through users in group and delete from system users array
-        foreach ($event->getData() as $user){
+        foreach ($event->getData() as $user) {
             $value = $user['userPrincipalName'];
 
             if (($key = array_search($value, $systemUsersArray)) !== false) {
