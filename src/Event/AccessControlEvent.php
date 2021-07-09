@@ -1,8 +1,6 @@
 <?php
 
-
 namespace ItkDev\AdgangsstyringBundle\Event;
-
 
 use Symfony\Contracts\EventDispatcher\Event;
 
