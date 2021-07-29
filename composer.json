@@ -17,12 +17,6 @@
             "ItkDev\\AdgangsstyringBundle\\": "src/"
         }
     },
-    "repositories": {
-        "itkdev/adgangsstyring": {
-            "type": "path",
-            "url": "../adgangsstyring"
-        }
-    },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
     },
