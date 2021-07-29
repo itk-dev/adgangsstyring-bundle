@@ -5,6 +5,7 @@ namespace ItkDev\AdgangsstyringBundle\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use ItkDev\Adgangsstyring\Controller;
+use ItkDev\Adgangsstyring\Handler\EventDispatcherHandler;
 use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,13 +39,16 @@ class AccessControlCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $subscriber = new EventSubscriber($this->em, $this->userClass, $this->username);
+
         $eventDispatcher = new EventDispatcher();
         $eventDispatcher->addSubscriber($subscriber);
 
-        $client = new Client();
-        $controller = new Controller($eventDispatcher, $client, $this->options);
+        $eventHandler = new EventDispatcherHandler($eventDispatcher);
 
-        $controller->run();
+        $client = new Client();
+        $controller = new Controller($client, $this->options);
+
+        $controller->run($eventHandler);
 
         return Command::SUCCESS;
     }
