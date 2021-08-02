@@ -7,11 +7,11 @@ use GuzzleHttp\Client;
 use ItkDev\Adgangsstyring\Controller;
 use ItkDev\Adgangsstyring\Handler\EventDispatcherHandler;
 use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AccessControlCommand extends Command
 {
