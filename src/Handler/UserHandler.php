@@ -1,8 +1,6 @@
 <?php
 
-
 namespace ItkDev\AdgangsstyringBundle\Handler;
-
 
 use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\Adgangsstyring\Handler\HandlerInterface;
