@@ -6,9 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\Adgangsstyring\Event\CommitEvent;
 use ItkDev\Adgangsstyring\Event\StartEvent;
 use ItkDev\Adgangsstyring\Event\UserDataEvent;
-use ItkDev\AdgangsstyringBundle\Event\AccessControlEvent;
+use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -31,8 +31,11 @@ class EventSubscriber implements EventSubscriberInterface
 
     private $cache;
 
-    public function __construct(EntityManagerInterface $em, string $className, string $username)
+    private $dispatcher;
+
+    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username)
     {
+        $this->dispatcher = $dispatcher;
         $this->em = $em;
         $this->className = $className;
         $this->username = $username;
@@ -52,6 +55,7 @@ class EventSubscriber implements EventSubscriberInterface
      */
     public function start(StartEvent $event)
     {
+        var_dump('test');
         // Get all users in system
         $repository = $this->em->getRepository($this->className);
         $users = $repository->findAll();
@@ -110,9 +114,8 @@ class EventSubscriber implements EventSubscriberInterface
         $systemUsersArray = $systemUsers->get();
 
         // Dispatch new event with remaining list
-        $dispatcher = new EventDispatcher();
-        $accessControlEvent = new AccessControlEvent($systemUsersArray);
+        $accessControlEvent = new DeleteUserEvent($systemUsersArray);
 
-        $dispatcher->dispatch($accessControlEvent);
+        $this->dispatcher->dispatch($accessControlEvent);
     }
 }

@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use ItkDev\Adgangsstyring\Controller;
 use ItkDev\Adgangsstyring\Handler\EventDispatcherHandler;
 use ItkDev\AdgangsstyringBundle\EventSubscriber\EventSubscriber;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class AccessControlCommand extends Command
 {
+    private $dispatcher;
     private $options;
     private $em;
     private $userClass;
@@ -21,8 +23,9 @@ class AccessControlCommand extends Command
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'adgangsstyring:run';
 
-    public function __construct(array $options, EntityManagerInterface $em, string $userClass, string $username, string $name = null)
+    public function __construct(EventDispatcherInterface $dispatcher, array $options, EntityManagerInterface $em, string $userClass, string $username, string $name = null)
     {
+        $this->dispatcher = $dispatcher;
         $this->options = $options;
         $this->em = $em;
         $this->userClass = $userClass;
@@ -38,16 +41,16 @@ class AccessControlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $subscriber = new EventSubscriber($this->em, $this->userClass, $this->username);
+        $subscriber = new EventSubscriber($this->dispatcher, $this->em, $this->userClass, $this->username);
 
-        $eventDispatcher = new EventDispatcher();
-        $eventDispatcher->addSubscriber($subscriber);
+        $this->dispatcher->addSubscriber($subscriber);
 
-        $eventHandler = new EventDispatcherHandler($eventDispatcher);
+        $eventHandler = new EventDispatcherHandler($this->dispatcher);
 
         $client = new Client();
         $controller = new Controller($client, $this->options);
 
+        //$controller->run();
         $controller->run($eventHandler);
 
         return Command::SUCCESS;
