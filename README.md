@@ -94,7 +94,14 @@ this command.
 
 ### Unit Testing
 
-TO BE MADE
+We use PHPUnit for unit testing. To run the tests:
+
+```shell
+./vendor/bin/phpunit tests
+```
+
+The test suite uses [Mocks](https://phpunit.de/manual/6.5/en/test-doubles.html)
+for generation of test doubles.
 
 ### Check Coding Standard
 
