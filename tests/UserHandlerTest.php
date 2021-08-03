@@ -15,10 +15,6 @@ class UserHandlerTest extends TestCase
     private $mockEntityManager;
     private $mockClassName;
     private $mockUserName;
-    /**
-     * @var UserHandler
-     */
-    private $userHandler;
 
     protected function setUp(): void
     {
