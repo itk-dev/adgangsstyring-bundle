@@ -82,4 +82,4 @@ jobs:
         run: |
           composer install --no-interaction --no-progress
       - name: Unit tests
-        run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
+        run: phpdbg -qrr /vendor/bin/phpunit tests
