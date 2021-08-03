@@ -86,7 +86,11 @@ jobs:
           composer install --no-interaction --no-progress
       - name: Unit tests
 <<<<<<< HEAD
+<<<<<<< HEAD
         run: php vendor/bin/phpunit tests
 =======
         run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
 >>>>>>> 2333520 (Added unit tests to github actions)
+=======
+        run: phpdbg -qrr /vendor/bin/phpunit tests
+>>>>>>> 16ceee8 (Attempt at making github actions run unit tests)
