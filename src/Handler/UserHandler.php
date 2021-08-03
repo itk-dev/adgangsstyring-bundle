@@ -35,6 +35,7 @@ class UserHandler implements HandlerInterface
 
     public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username)
     {
+        $this->cache = new FilesystemAdapter();
         $this->dispatcher = $dispatcher;
         $this->em = $em;
         $this->className = $className;
@@ -51,7 +52,6 @@ class UserHandler implements HandlerInterface
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         // setup cache
-        $this->cache = new FilesystemAdapter();
         $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
 
         // Array for users marked for potential removal
