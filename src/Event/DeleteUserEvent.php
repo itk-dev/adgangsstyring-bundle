@@ -4,7 +4,7 @@ namespace ItkDev\AdgangsstyringBundle\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-class AccessControlEvent extends Event
+class DeleteUserEvent extends Event
 {
     private $data;
 

@@ -1,12 +1,6 @@
-# Work in progress
-
 # Adgangsstyring Bundle
 
 Symfony bundle for user access control via Azure AD.
-
-## References
-
-REFERENCES
 
 ## Installation
 
@@ -46,22 +40,48 @@ itkdev_adgangsstyring:
     username: 'email'
 ```
 
-### Listening to AccessControlEvent
+### Listening to DeleteUserEvent
 
-The bundle dispatches an `AccessControlEvent` containing
-a list of users for potential removal. This is a list of users 
-whom are in the using system but are not assigned to the group.
+The bundle dispatches an `DeleteUserEvent` containing
+a list of users for potential removal. This is a list of users
+whom are registered in the using system, but are not assigned
+to the AD group. This means the bundle does exclude users having specific
+characteristics, i.e. super admin users or
+akin may be among the users the bundle provides.
 
 Therefore, the using system will need to implement an EventListener
-or EventSubscriber that listens to the 'AccessControlEvent'.
+or EventSubscriber that listens to the 'DeleteUserEvent'.
 
-#### Some example EventLister or EventSubscriber
+#### Example EventSubscriber
 
-Give an example here.
+```php
+<?php
+
+namespace App\EventSubscriber;
+
+use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class DeleteUserEventSubscriber implements EventSubscriberInterface
+{
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            DeleteUserEvent::class => 'deleteUsers',
+        ];
+    }
+
+    public function deleteUsers(DeleteUserEvent $event)
+    {
+        // User deletion logic here
+    }
+}
+```
 
 ### Starting the flow
 
-To start the flow the using system call the follow CLI command:
+To start the flow the using system execute the follow CLI command:
 
 ```shell
 php bin/console adgangsstyring:run

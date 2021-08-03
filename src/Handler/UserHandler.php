@@ -1,56 +1,47 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\EventSubscriber;
+namespace ItkDev\AdgangsstyringBundle\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use ItkDev\Adgangsstyring\Event\CommitEvent;
-use ItkDev\Adgangsstyring\Event\StartEvent;
-use ItkDev\Adgangsstyring\Event\UserDataEvent;
-use ItkDev\AdgangsstyringBundle\Event\AccessControlEvent;
+use ItkDev\Adgangsstyring\Handler\HandlerInterface;
+use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class EventSubscriber implements EventSubscriberInterface
+class UserHandler implements HandlerInterface
 {
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
     /**
      * @var EntityManagerInterface
      */
     private $em;
-
     /**
      * @var string
      */
     private $className;
-
     /**
      * @var string
      */
     private $username;
-
+    /**
+     * @var FilesystemAdapter
+     */
     private $cache;
 
-    public function __construct(EntityManagerInterface $em, string $className, string $username)
+    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username)
     {
+        $this->dispatcher = $dispatcher;
         $this->em = $em;
         $this->className = $className;
         $this->username = $username;
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            StartEvent::class => ['start'],
-            UserDataEvent::class => ['userData'],
-            CommitEvent::class => ['commit'],
-        ];
-    }
-
-    /**
-     * Start
-     */
-    public function start(StartEvent $event)
+    public function start(): void
     {
         // Get all users in system
         $repository = $this->em->getRepository($this->className);
@@ -77,17 +68,14 @@ class EventSubscriber implements EventSubscriberInterface
         $this->cache->save($systemUsers);
     }
 
-    /**
-     * Handle user data
-     */
-    public function userData(UserDataEvent $event)
+    public function retainUsers(array $users): void
     {
         // Get array users in system
         $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
         $systemUsersArray = $systemUsers->get();
 
         // Run through users in group and delete from system users array
-        foreach ($event->getData() as $user) {
+        foreach ($users as $user) {
             $value = $user['userPrincipalName'];
 
             if (($key = array_search($value, $systemUsersArray)) !== false) {
@@ -100,19 +88,15 @@ class EventSubscriber implements EventSubscriberInterface
         $this->cache->save($systemUsers);
     }
 
-    /**
-     * Commit
-     */
-    public function commit(CommitEvent $event)
+    public function commit(): void
     {
         // Get array users in system whom remain
         $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
         $systemUsersArray = $systemUsers->get();
 
         // Dispatch new event with remaining list
-        $dispatcher = new EventDispatcher();
-        $accessControlEvent = new AccessControlEvent($systemUsersArray);
+        $accessControlEvent = new DeleteUserEvent($systemUsersArray);
 
-        $dispatcher->dispatch($accessControlEvent);
+        $this->dispatcher->dispatch($accessControlEvent);
     }
 }
