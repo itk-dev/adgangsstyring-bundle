@@ -44,9 +44,10 @@ itkdev_adgangsstyring:
 
 The bundle dispatches an `DeleteUserEvent` containing
 a list of users for potential removal. This is a list of users
-whom are in the using system but are not assigned to the group.
-This means the bundle does exclude users having specific roles,
-i.e. super admin users or akin may be among the users the bundle provides.
+whom are registered in the using system, but are not assigned
+to the AD group. This means the bundle does exclude users having specific
+characteristics, i.e. super admin users or
+akin may be among the users the bundle provides.
 
 Therefore, the using system will need to implement an EventListener
 or EventSubscriber that listens to the 'DeleteUserEvent'.
@@ -80,7 +81,7 @@ class DeleteUserEventSubscriber implements EventSubscriberInterface
 
 ### Starting the flow
 
-To start the flow the using system call the follow CLI command:
+To start the flow the using system execute the follow CLI command:
 
 ```shell
 php bin/console adgangsstyring:run
