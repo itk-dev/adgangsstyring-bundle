@@ -16,12 +16,15 @@ class UserHandlerTest extends TestCase
     private $mockClassName;
     private $mockUserName;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     /**
      * @var UserHandler
      */
     private $userHandler;
 >>>>>>> 6d45b85 (Added Unit tests for UserHandler)
+=======
+>>>>>>> 9410433 (Applied coding standards)
 
     protected function setUp(): void
     {
@@ -179,7 +182,11 @@ class UserHandlerTest extends TestCase
         $this->mockUserName = 'mockUsername';
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 }
 >>>>>>> 6d45b85 (Added Unit tests for UserHandler)
+=======
+}
+>>>>>>> 9410433 (Applied coding standards)
