@@ -55,6 +55,10 @@ jobs:
       - name: PHPCS
         run: |
           composer check-coding-standards
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2333520 (Added unit tests to github actions)
   unit_tests:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -81,4 +85,8 @@ jobs:
         run: |
           composer install --no-interaction --no-progress
       - name: Unit tests
+<<<<<<< HEAD
         run: php vendor/bin/phpunit tests
+=======
+        run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
+>>>>>>> 2333520 (Added unit tests to github actions)
