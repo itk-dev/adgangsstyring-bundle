@@ -57,9 +57,12 @@ jobs:
           composer check-coding-standards
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2333520 (Added unit tests to github actions)
+=======
+>>>>>>> e539502 (Another attempt at github actions running unit tests)
   unit_tests:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -88,6 +91,7 @@ jobs:
       - name: Unit tests
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         run: php vendor/bin/phpunit tests
 =======
         run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
@@ -97,3 +101,6 @@ jobs:
 >>>>>>> 16ceee8 (Attempt at making github actions run unit tests)
 =======
 >>>>>>> f7507ac (Removed attempt at github actions running unit tests)
+=======
+        run: php vendor/bin/phpunit tests
+>>>>>>> e539502 (Another attempt at github actions running unit tests)
