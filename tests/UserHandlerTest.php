@@ -20,13 +20,15 @@ class UserHandlerTest extends TestCase
     {
         parent::setUp();
 
-        $this->setupUserHandler();
+        $this->setupUserHandlerArguments();
     }
 
     public function testStart()
     {
+        // Create a UserHandler
         $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
 
+        // Create mock Repository
         $mockRepository = $this->createMock(ObjectRepository::class);
 
         $this->mockEntityManager
@@ -35,6 +37,7 @@ class UserHandlerTest extends TestCase
             ->with($this->mockClassName)
             ->willReturn($mockRepository);
 
+        // Create mock Users
         $mockUsers = [];
 
         $mockUsers[0] = (object) [
@@ -53,29 +56,33 @@ class UserHandlerTest extends TestCase
 
         $handler->start();
 
+        // Get cached system users set during start()
         $cache = new FilesystemAdapter();
-        $systemUsers = $cache->getItem('adgangsstyring.system_users');
-        $systemUsersArray = $systemUsers->get();
+        $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
+        $actual= $systemUsersItem->get();
 
+        // Create expected result
         $expected = [];
         $expected[0] = 'someUsername1';
         $expected[1] = 'someUsername2';
 
-        $this->assertEquals($expected, $systemUsersArray);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testRetainUsers()
     {
+        // Cache some usernames for retainUsers() to use
         $cache = new FilesystemAdapter();
-        $systemUsers = $cache->getItem('adgangsstyring.system_users');
+        $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
 
         $testCachedUsers = [];
         array_push($testCachedUsers, 'someUsername1');
         array_push($testCachedUsers, 'someUsername2');
 
-        $systemUsers->set($testCachedUsers);
-        $cache->save($systemUsers);
+        $systemUsersItem->set($testCachedUsers);
+        $cache->save($systemUsersItem);
 
+        // Mock users to be removed from cached list
         $users = [];
         array_push($users, [
             'userPrincipalName' => 'someUsername1',
@@ -86,14 +93,16 @@ class UserHandlerTest extends TestCase
 
         $handler->retainUsers($users);
 
+        // Get cached list of users after retainUsers()
+        $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
+        $actual = $systemUsersItem->get();
+
+        // Create expected list
         $expected = [];
         // Notice the key being 1, as we dont re-index the array
         $expected[1] = 'someUsername2';
 
-        $systemUsers = $cache->getItem('adgangsstyring.system_users');
-        $systemUsersArray = $systemUsers->get();
-
-        $this->assertEquals($expected, $systemUsersArray);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testCommit()
@@ -107,7 +116,7 @@ class UserHandlerTest extends TestCase
         $handler->commit();
     }
 
-    private function setupUserHandler()
+    private function setupUserHandlerArguments()
     {
         $this->mockDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->mockEntityManager = $this->createMock(EntityManagerInterface::class);
