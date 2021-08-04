@@ -4,6 +4,7 @@ namespace ItkDev\AdgangsstyringBundle\Tests;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use ItkDev\AdgangsstyringBundle\Exception\UserClaimException;
 use ItkDev\AdgangsstyringBundle\Handler\UserHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -13,8 +14,9 @@ class UserHandlerTest extends TestCase
 {
     private $mockDispatcher;
     private $mockEntityManager;
-    private $mockClassName;
-    private $mockUserName;
+    private $mockUserClassName;
+    private $mockUserProperty;
+    private $mockUserClaimProperty;
 
     protected function setUp(): void
     {
@@ -26,7 +28,7 @@ class UserHandlerTest extends TestCase
     public function testStart()
     {
         // Create a UserHandler
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
         // Create mock Repository
         $mockRepository = $this->createMock(ObjectRepository::class);
@@ -34,18 +36,18 @@ class UserHandlerTest extends TestCase
         $this->mockEntityManager
             ->expects($this->once())
             ->method('getRepository')
-            ->with($this->mockClassName)
+            ->with($this->mockUserClassName)
             ->willReturn($mockRepository);
 
         // Create mock Users
         $mockUsers = [];
 
         $mockUsers[0] = (object) [
-            $this->mockUserName => 'someUsername1',
+            $this->mockUserProperty => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ];
         $mockUsers[1] = (object) [
-            $this->mockUserName => 'someUsername2',
+            $this->mockUserProperty => 'someUsername2',
             'someOtherProperty' => 'someOtherProperty2'
         ];
 
@@ -85,11 +87,11 @@ class UserHandlerTest extends TestCase
         // Mock users to be removed from cached list
         $users = [];
         array_push($users, [
-            'userPrincipalName' => 'someUsername1',
+            'mockUserClaimProperty' => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ]);
 
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
         $handler->retainUsers($users);
 
@@ -111,16 +113,33 @@ class UserHandlerTest extends TestCase
             ->expects($this->once())
             ->method('dispatch');
 
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
         $handler->commit();
+    }
+
+    public function testUserClaimExceptionThrown()
+    {
+        $this->expectException(UserClaimException::class);
+
+        // Mock users to be removed from cached list
+        $users = [];
+        array_push($users, [
+            'mockUserClaimPropertyWrong' => 'someUsername1',
+            'someOtherProperty' => 'someOtherProperty1',
+        ]);
+
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
+
+        $handler->retainUsers($users);
     }
 
     private function setupUserHandlerArguments()
     {
         $this->mockDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->mockEntityManager = $this->createMock(EntityManagerInterface::class);
-        $this->mockClassName = 'mockClassName';
-        $this->mockUserName = 'mockUsername';
+        $this->mockUserClassName = 'mockUserClassName';
+        $this->mockUserProperty = 'mockUserProperty';
+        $this->mockUserClaimProperty = 'mockUserClaimProperty';
     }
 }
