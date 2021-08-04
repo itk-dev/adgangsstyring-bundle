@@ -32,13 +32,18 @@ class UserHandler implements HandlerInterface
      * @var FilesystemAdapter
      */
     private $cache;
+    /**
+     * @var string
+     */
+    private $group_user_property;
 
-    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username)
+    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username, string $group_user_property)
     {
         $this->dispatcher = $dispatcher;
         $this->em = $em;
         $this->className = $className;
         $this->username = $username;
+        $this->group_user_property = $group_user_property;
     }
 
     public function start(): void
@@ -76,7 +81,7 @@ class UserHandler implements HandlerInterface
 
         // Run through users in group and delete from system users array
         foreach ($users as $user) {
-            $value = $user['userPrincipalName'];
+            $value = $user[$this->group_user_property];
 
             if (($key = array_search($value, $systemUsersArray)) !== false) {
                 unset($systemUsersArray[$key]);

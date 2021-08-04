@@ -40,6 +40,9 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('username')
                             ->info('Unique username')
                             ->cannotBeEmpty()->end()
+                        ->scalarNode('group_user_property')
+                            ->info('Group user property to report back')
+                            ->cannotBeEmpty()->end()
                     ->end()
                 ->end()
             ->end();

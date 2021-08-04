@@ -18,16 +18,18 @@ class AccessControlCommand extends Command
     private $em;
     private $userClass;
     private $username;
+    private $group_user_property;
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'adgangsstyring:run';
 
-    public function __construct(EventDispatcherInterface $dispatcher, array $options, EntityManagerInterface $em, string $userClass, string $username, string $name = null)
+    public function __construct(EventDispatcherInterface $dispatcher, array $options, EntityManagerInterface $em, string $userClass, string $username, string $group_user_property, string $name = null)
     {
         $this->dispatcher = $dispatcher;
         $this->options = $options;
         $this->em = $em;
         $this->userClass = $userClass;
         $this->username = $username;
+        $this->group_user_property = $group_user_property;
         parent::__construct($name);
     }
 
@@ -39,7 +41,7 @@ class AccessControlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $handler = new UserHandler($this->dispatcher, $this->em, $this->userClass, $this->username);
+        $handler = new UserHandler($this->dispatcher, $this->em, $this->userClass, $this->username, $this->group_user_property);
 
         $client = new Client();
         $controller = new Controller($client, $this->options);

@@ -19,3 +19,4 @@ services:
             $options: ~
             $userClass: ~
             $username: ~
+            $group_user_property: ~
