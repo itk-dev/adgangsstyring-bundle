@@ -134,7 +134,7 @@ TO BE MADE
 
 We use [SemVer](http://semver.org/) for versioning.
 For the versions available, see the
-[tags on this repository](https://github.com/itk-dev/adgangsstyring/tags).
+[tags on this repository](https://github.com/itk-dev/adgangsstyring-bundle/tags).
 
 ## License
 
