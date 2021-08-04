@@ -19,9 +19,9 @@ yarn install
 ## Usage
 
 Before being able to use the bundle, you must have
-your own `User` entity, `UserRepository`  and database setup
+your own `User` entity, `UserRepository`  and database setup.
 
-Once you have this, you need to configure variables for
+You will need to configure variables for
 Microsoft groups, and the above mentioned `User` entity:
 
 ### Variable configuration
@@ -37,20 +37,24 @@ itkdev_adgangsstyring:
     group_id: 'some_group_id'
   user_options:
     user_class: 'App\Entity\User'
-    username: 'email'
+    user_property: 'some_user_property'
+    user_claim_property: 'some_user_claim_property'
 ```
+
+Note that `user_property` and `user_claim_property`
+should be unique properties and needs to match up.
 
 ### Listening to DeleteUserEvent
 
-The bundle dispatches an `DeleteUserEvent` containing
+The bundle dispatches a `DeleteUserEvent` containing
 a list of users for potential removal. This is a list of users
 whom are registered in the using system, but are not assigned
-to the AD group. This means the bundle does exclude users having specific
-characteristics, i.e. super admin users or
+to the AD group. This means the bundle does not exclude users
+having specific characteristics, i.e. super admin users or
 akin may be among the users the bundle provides.
 
 Therefore, the using system will need to implement an EventListener
-or EventSubscriber that listens to the 'DeleteUserEvent'.
+or EventSubscriber that listens to the `DeleteUserEvent`.
 
 #### Example EventSubscriber
 
@@ -130,7 +134,7 @@ TO BE MADE
 
 We use [SemVer](http://semver.org/) for versioning.
 For the versions available, see the
-[tags on this repository](https://github.com/itk-dev/adgangsstyring/tags).
+[tags on this repository](https://github.com/itk-dev/adgangsstyring-bundle/tags).
 
 ## License
 

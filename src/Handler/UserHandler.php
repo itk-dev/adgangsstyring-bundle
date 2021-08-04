@@ -5,6 +5,8 @@ namespace ItkDev\AdgangsstyringBundle\Handler;
 use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\Adgangsstyring\Handler\HandlerInterface;
 use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
+use ItkDev\AdgangsstyringBundle\Exception\UserClaimException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -23,28 +25,36 @@ class UserHandler implements HandlerInterface
     /**
      * @var string
      */
-    private $className;
+    private $user_class;
     /**
      * @var string
      */
-    private $username;
+    private $user_property;
     /**
      * @var FilesystemAdapter
      */
     private $cache;
+    /**
+     * @var string
+     */
+    private $user_claim_property;
 
-    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username)
+    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $user_class, string $user_property, string $user_claim_property)
     {
         $this->dispatcher = $dispatcher;
         $this->em = $em;
-        $this->className = $className;
-        $this->username = $username;
+        $this->user_class = $user_class;
+        $this->user_property = $user_property;
+        $this->user_claim_property = $user_claim_property;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function start(): void
     {
         // Get all users in system
-        $repository = $this->em->getRepository($this->className);
+        $repository = $this->em->getRepository($this->user_class);
         $users = $repository->findAll();
 
         // Create PropertyAccessor
@@ -58,7 +68,7 @@ class UserHandler implements HandlerInterface
         $systemUsersArray = [];
 
         foreach ($users as $user) {
-            $userData = $propertyAccessor->getValue($user, $this->username);
+            $userData = $propertyAccessor->getValue($user, $this->user_property);
             // Add to potential removal array
             array_push($systemUsersArray, $userData);
         }
@@ -68,6 +78,10 @@ class UserHandler implements HandlerInterface
         $this->cache->save($systemUsers);
     }
 
+    /**
+     * @throws UserClaimException
+     * @throws InvalidArgumentException
+     */
     public function retainUsers(array $users): void
     {
         // Get array users in system
@@ -76,7 +90,11 @@ class UserHandler implements HandlerInterface
 
         // Run through users in group and delete from system users array
         foreach ($users as $user) {
-            $value = $user['userPrincipalName'];
+            if (!isset($user[$this->user_claim_property])) {
+                $message = sprintf('User claim: %s, does not exist.', $this->user_claim_property);
+                throw new UserClaimException($message);
+            }
+            $value = $user[$this->user_claim_property];
 
             if (($key = array_search($value, $systemUsersArray)) !== false) {
                 unset($systemUsersArray[$key]);
@@ -88,6 +106,9 @@ class UserHandler implements HandlerInterface
         $this->cache->save($systemUsers);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function commit(): void
     {
         // Get array users in system whom remain
