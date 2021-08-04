@@ -37,8 +37,12 @@ itkdev_adgangsstyring:
     group_id: 'some_group_id'
   user_options:
     user_class: 'App\Entity\User'
-    username: 'email'
+    user_property: 'some_user_property'
+    user_claim_property: 'some_user_claim_property'
 ```
+
+Note that `user_property` and `user_claim_property`
+should be unique properties and needs to match up.
 
 ### Listening to DeleteUserEvent
 
