@@ -4,6 +4,7 @@ namespace ItkDev\AdgangsstyringBundle\Tests;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use ItkDev\AdgangsstyringBundle\Exception\UserClaimException;
 use ItkDev\AdgangsstyringBundle\Handler\UserHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -13,6 +14,7 @@ class UserHandlerTest extends TestCase
 {
     private $mockDispatcher;
     private $mockEntityManager;
+<<<<<<< HEAD
     private $mockClassName;
     private $mockUserName;
 <<<<<<< HEAD
@@ -25,6 +27,11 @@ class UserHandlerTest extends TestCase
 >>>>>>> 6d45b85 (Added Unit tests for UserHandler)
 =======
 >>>>>>> 9410433 (Applied coding standards)
+=======
+    private $mockUserClassName;
+    private $mockUserProperty;
+    private $mockUserClaimProperty;
+>>>>>>> 35513e5 (Updated tests and added test for UserClaimException being correctly thrown)
 
     protected function setUp(): void
     {
@@ -48,7 +55,7 @@ class UserHandlerTest extends TestCase
 =======
 >>>>>>> 10985e5 (Cleaned up UserHandlerTest)
         // Create a UserHandler
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
         // Create mock Repository
 <<<<<<< HEAD
@@ -63,7 +70,7 @@ class UserHandlerTest extends TestCase
         $this->mockEntityManager
             ->expects($this->once())
             ->method('getRepository')
-            ->with($this->mockClassName)
+            ->with($this->mockUserClassName)
             ->willReturn($mockRepository);
 
 <<<<<<< HEAD
@@ -77,11 +84,11 @@ class UserHandlerTest extends TestCase
         $mockUsers = [];
 
         $mockUsers[0] = (object) [
-            $this->mockUserName => 'someUsername1',
+            $this->mockUserProperty => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ];
         $mockUsers[1] = (object) [
-            $this->mockUserName => 'someUsername2',
+            $this->mockUserProperty => 'someUsername2',
             'someOtherProperty' => 'someOtherProperty2'
         ];
 
@@ -168,11 +175,11 @@ class UserHandlerTest extends TestCase
 >>>>>>> 10985e5 (Cleaned up UserHandlerTest)
         $users = [];
         array_push($users, [
-            'userPrincipalName' => 'someUsername1',
+            'mockUserClaimProperty' => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ]);
 
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
         $handler->retainUsers($users);
 
@@ -214,13 +221,32 @@ class UserHandlerTest extends TestCase
             ->expects($this->once())
             ->method('dispatch');
 
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockClassName, $this->mockUserName);
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
         $handler->commit();
     }
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    public function testUserClaimExceptionThrown()
+    {
+        $this->expectException(UserClaimException::class);
+
+        // Mock users to be removed from cached list
+        $users = [];
+        array_push($users, [
+            'mockUserClaimPropertyWrong' => 'someUsername1',
+            'someOtherProperty' => 'someOtherProperty1',
+        ]);
+
+        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
+
+        $handler->retainUsers($users);
+    }
+
+>>>>>>> 35513e5 (Updated tests and added test for UserClaimException being correctly thrown)
     private function setupUserHandlerArguments()
 =======
     private function setupUserHandler()
@@ -231,8 +257,9 @@ class UserHandlerTest extends TestCase
     {
         $this->mockDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->mockEntityManager = $this->createMock(EntityManagerInterface::class);
-        $this->mockClassName = 'mockClassName';
-        $this->mockUserName = 'mockUsername';
+        $this->mockUserClassName = 'mockUserClassName';
+        $this->mockUserProperty = 'mockUserProperty';
+        $this->mockUserClaimProperty = 'mockUserClaimProperty';
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
