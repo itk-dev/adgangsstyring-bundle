@@ -34,6 +34,7 @@ class ItkDevAdgangsstyringExtension extends Extension
         $definition->replaceArgument('$options', $options);
         $definition->replaceArgument('$userClass', $config['user_options']['user_class']);
         $definition->replaceArgument('$username', $config['user_options']['username']);
+        $definition->replaceArgument('$group_user_property', $config['user_options']['group_user_property']);
     }
 
     /**
