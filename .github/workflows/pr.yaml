@@ -58,6 +58,7 @@ jobs:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2333520 (Added unit tests to github actions)
@@ -104,3 +105,5 @@ jobs:
 =======
         run: php vendor/bin/phpunit tests
 >>>>>>> e539502 (Another attempt at github actions running unit tests)
+=======
+>>>>>>> 12fcf87 (Removed unit-tests for github actions to make this branch only adding tests)
