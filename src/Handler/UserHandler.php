@@ -5,6 +5,8 @@ namespace ItkDev\AdgangsstyringBundle\Handler;
 use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\Adgangsstyring\Handler\HandlerInterface;
 use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
+use ItkDev\AdgangsstyringBundle\Exception\UserClaimException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -46,6 +48,9 @@ class UserHandler implements HandlerInterface
         $this->group_user_property = $group_user_property;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function start(): void
     {
         // Get all users in system
@@ -73,6 +78,10 @@ class UserHandler implements HandlerInterface
         $this->cache->save($systemUsers);
     }
 
+    /**
+     * @throws UserClaimException
+     * @throws InvalidArgumentException
+     */
     public function retainUsers(array $users): void
     {
         // Get array users in system
@@ -81,6 +90,10 @@ class UserHandler implements HandlerInterface
 
         // Run through users in group and delete from system users array
         foreach ($users as $user) {
+            if (!isset($user[$this->group_user_property])) {
+                $message = sprintf('User claim: %s, does not exist.', $this->group_user_property);
+                throw new UserClaimException($message);
+            }
             $value = $user[$this->group_user_property];
 
             if (($key = array_search($value, $systemUsersArray)) !== false) {
@@ -93,6 +106,9 @@ class UserHandler implements HandlerInterface
         $this->cache->save($systemUsers);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function commit(): void
     {
         // Get array users in system whom remain
