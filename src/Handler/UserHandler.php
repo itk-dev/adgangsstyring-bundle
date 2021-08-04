@@ -25,11 +25,11 @@ class UserHandler implements HandlerInterface
     /**
      * @var string
      */
-    private $className;
+    private $user_class;
     /**
      * @var string
      */
-    private $username;
+    private $user_property;
     /**
      * @var FilesystemAdapter
      */
@@ -37,15 +37,15 @@ class UserHandler implements HandlerInterface
     /**
      * @var string
      */
-    private $group_user_property;
+    private $user_claim_property;
 
-    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $className, string $username, string $group_user_property)
+    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $user_class, string $user_property, string $user_claim_property)
     {
         $this->dispatcher = $dispatcher;
         $this->em = $em;
-        $this->className = $className;
-        $this->username = $username;
-        $this->group_user_property = $group_user_property;
+        $this->user_class = $user_class;
+        $this->user_property = $user_property;
+        $this->user_claim_property = $user_claim_property;
     }
 
     /**
@@ -54,7 +54,7 @@ class UserHandler implements HandlerInterface
     public function start(): void
     {
         // Get all users in system
-        $repository = $this->em->getRepository($this->className);
+        $repository = $this->em->getRepository($this->user_class);
         $users = $repository->findAll();
 
         // Create PropertyAccessor
@@ -68,7 +68,7 @@ class UserHandler implements HandlerInterface
         $systemUsersArray = [];
 
         foreach ($users as $user) {
-            $userData = $propertyAccessor->getValue($user, $this->username);
+            $userData = $propertyAccessor->getValue($user, $this->user_property);
             // Add to potential removal array
             array_push($systemUsersArray, $userData);
         }
@@ -90,11 +90,11 @@ class UserHandler implements HandlerInterface
 
         // Run through users in group and delete from system users array
         foreach ($users as $user) {
-            if (!isset($user[$this->group_user_property])) {
-                $message = sprintf('User claim: %s, does not exist.', $this->group_user_property);
+            if (!isset($user[$this->user_claim_property])) {
+                $message = sprintf('User claim: %s, does not exist.', $this->user_claim_property);
                 throw new UserClaimException($message);
             }
-            $value = $user[$this->group_user_property];
+            $value = $user[$this->user_claim_property];
 
             if (($key = array_search($value, $systemUsersArray)) !== false) {
                 unset($systemUsersArray[$key]);

@@ -32,9 +32,9 @@ class ItkDevAdgangsstyringExtension extends Extension
 
         $definition = $container->getDefinition(AccessControlCommand::class);
         $definition->replaceArgument('$options', $options);
-        $definition->replaceArgument('$userClass', $config['user_options']['user_class']);
-        $definition->replaceArgument('$username', $config['user_options']['username']);
-        $definition->replaceArgument('$group_user_property', $config['user_options']['group_user_property']);
+        $definition->replaceArgument('$user_class', $config['user_options']['user_class']);
+        $definition->replaceArgument('$user_property', $config['user_options']['user_property']);
+        $definition->replaceArgument('$user_claim_property', $config['user_options']['user_claim_property']);
     }
 
     /**
