@@ -55,18 +55,6 @@ jobs:
       - name: PHPCS
         run: |
           composer check-coding-standards
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 2333520 (Added unit tests to github actions)
-=======
->>>>>>> e539502 (Another attempt at github actions running unit tests)
-=======
->>>>>>> f064beb (Attempt at adding unit testing to Github Actions)
   unit_tests:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -93,34 +81,7 @@ jobs:
         run: |
           composer install --no-interaction --no-progress
       - name: Unit tests
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        run: php vendor/bin/phpunit tests
-=======
-        run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
->>>>>>> 2333520 (Added unit tests to github actions)
-=======
-        run: phpdbg -qrr /vendor/bin/phpunit tests
->>>>>>> 16ceee8 (Attempt at making github actions run unit tests)
-=======
->>>>>>> f7507ac (Removed attempt at github actions running unit tests)
-=======
-        run: php vendor/bin/phpunit tests
->>>>>>> e539502 (Another attempt at github actions running unit tests)
-=======
->>>>>>> 12fcf87 (Removed unit-tests for github actions to make this branch only adding tests)
-=======
-        run: php vendor/bin/phpunit tests
->>>>>>> f064beb (Attempt at adding unit testing to Github Actions)
-=======
-        run: php vendor/bin/phpunit tests
-=======
         run: php vendor/bin/phpunit tests --coverage-clover=coverage/unit.xml
->>>>>>> 9464670 (Add coverage of unit test to github actions)
 
   markdownlint:
     name: markdownlint
@@ -146,4 +107,3 @@ jobs:
       - run: yarn install
       - name: markdownlint
         run: yarn markdownlint README.md
->>>>>>> 3e4311e (Attempt at adding markdownlint to github actions)
