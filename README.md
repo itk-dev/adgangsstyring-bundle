@@ -7,7 +7,7 @@ Symfony bundle for user access control via Azure AD.
 To install run
 
 ```shell
-composer require itkdev/adgangsstyring-bundle
+composer require itk-dev/adgangsstyring-bundle
 ```
 
 If you wish to run the coding standard tests for Markdown files

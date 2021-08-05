@@ -1,5 +1,5 @@
 {
-    "name": "itkdev/adgangsstyring-bundle",
+    "name": "itk-dev/adgangsstyring-bundle",
     "type": "symfony-bundle",
     "description": "Adgangsstyring bundle",
     "license": "MIT",
