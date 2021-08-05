@@ -97,6 +97,7 @@ jobs:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         run: php vendor/bin/phpunit tests
 =======
         run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
@@ -114,3 +115,31 @@ jobs:
 =======
         run: php vendor/bin/phpunit tests
 >>>>>>> f064beb (Attempt at adding unit testing to Github Actions)
+=======
+        run: php vendor/bin/phpunit tests
+
+  markdownlint:
+    name: markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn packages
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Yarn install
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - run: yarn install
+      - name: markdownlint
+        run: yarn markdownlint README.md
+>>>>>>> 3e4311e (Attempt at adding markdownlint to github actions)
