@@ -81,7 +81,7 @@ jobs:
         run: |
           composer install --no-interaction --no-progress
       - name: Unit tests
-        run: php vendor/bin/phpunit tests
+        run: php vendor/bin/phpunit tests --coverage-clover=coverage/unit.xml
 
   markdownlint:
     name: markdownlint
