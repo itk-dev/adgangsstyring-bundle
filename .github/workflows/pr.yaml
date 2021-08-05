@@ -98,6 +98,7 @@ jobs:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         run: php vendor/bin/phpunit tests
 =======
         run: phpdbg -qrr ./bin/phpunit --coverage-clover=coverage/unit.xml
@@ -117,6 +118,9 @@ jobs:
 >>>>>>> f064beb (Attempt at adding unit testing to Github Actions)
 =======
         run: php vendor/bin/phpunit tests
+=======
+        run: php vendor/bin/phpunit tests --coverage-clover=coverage/unit.xml
+>>>>>>> 9464670 (Add coverage of unit test to github actions)
 
   markdownlint:
     name: markdownlint
