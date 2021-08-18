@@ -1,20 +1,21 @@
 {
-    "name": "itk-dev/adgangsstyring-bundle",
+    "name": "itk-dev/azure-ad-delta-sync-bundle",
     "type": "symfony-bundle",
-    "description": "Adgangsstyring bundle",
+    "description": "Symfony bundle that enables the Azure AD Delta Sync flow",
     "license": "MIT",
     "require": {
         "php": "^7.2",
-        "itkdev/adgangsstyring": "dev-develop",
         "symfony/framework-bundle": "^5.2",
         "symfony/yaml": "^5.2",
         "symfony/console": "^5.2",
         "doctrine/orm": "^2.9",
-        "symfony/property-access": "^5.2"
+        "symfony/property-access": "^5.2",
+        "guzzlehttp/guzzle": "^7.3",
+        "itk-dev/azure-ad-delta-sync": "dev-develop"
     },
     "autoload": {
         "psr-4": {
-            "ItkDev\\AdgangsstyringBundle\\": "src/"
+            "ItkDev\\AzureAdDeltaSyncBundle\\": "src/"
         }
     },
     "require-dev": {
@@ -35,5 +36,11 @@
         "post-install-cmd": [
             "@install-codestandards"
         ]
+    },
+    "repositories": {
+        "itk-dev/azure-ad-delta-sync": {
+            "type": "path",
+            "url": "../adgangsstyring"
+        }
     }
 }

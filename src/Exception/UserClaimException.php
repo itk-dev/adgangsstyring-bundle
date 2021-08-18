@@ -1,6 +1,6 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\Exception;
+namespace ItkDev\AzureAdDeltaSyncBundle\Exception;
 
 use Exception;
 

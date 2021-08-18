@@ -1,6 +1,6 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\Event;
+namespace ItkDev\AzureAdDeltaSyncBundle\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 

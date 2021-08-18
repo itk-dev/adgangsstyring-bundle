@@ -1,11 +1,11 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\Handler;
+namespace ItkDev\AzureAdDeltaSyncBundle\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use ItkDev\Adgangsstyring\Handler\HandlerInterface;
-use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
-use ItkDev\AdgangsstyringBundle\Exception\UserClaimException;
+use ItkDev\AzureAdDeltaSync\Handler\HandlerInterface;
+use ItkDev\AzureAdDeltaSyncBundle\Event\DeleteUserEvent;
+use ItkDev\AzureAdDeltaSyncBundle\Exception\UserClaimException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -52,7 +52,7 @@ class UserHandler implements HandlerInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function start(): void
+    public function collectUsersForDeletionList(): void
     {
         // Get all users in system
         $repository = $this->em->getRepository($this->user_class);
@@ -82,7 +82,7 @@ class UserHandler implements HandlerInterface
      * @throws UserClaimException
      * @throws InvalidArgumentException
      */
-    public function retainUsers(array $users): void
+    public function removeUsersFromDeletionList(array $users): void
     {
         // Get array users in system
         $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
@@ -109,7 +109,7 @@ class UserHandler implements HandlerInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function commit(): void
+    public function commitDeletionList(): void
     {
         // Get array users in system whom remain
         $systemUsers = $this->cache->getItem('adgangsstyring.system_users');

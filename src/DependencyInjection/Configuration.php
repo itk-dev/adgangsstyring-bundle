@@ -1,6 +1,6 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\DependencyInjection;
+namespace ItkDev\AzureAdDeltaSyncBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -10,11 +10,11 @@ class Configuration implements ConfigurationInterface
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('itkdev_adgangsstyring');
+        $treeBuilder = new TreeBuilder('itkdev_azure_ad_delta_sync');
 
         $treeBuilder->getRootNode()
             ->children()
-                ->arrayNode('adgangsstyring_options')
+                ->arrayNode('azure_ad_delta_sync_options')
                 ->isRequired()
                     ->children()
                         ->scalarNode('tenant_id')

@@ -1,11 +1,11 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\Tests;
+namespace ItkDev\AzureAdDeltaSyncBundle\Tests;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
-use ItkDev\AdgangsstyringBundle\Exception\UserClaimException;
-use ItkDev\AdgangsstyringBundle\Handler\UserHandler;
+use ItkDev\AzureAdDeltaSyncBundle\Exception\UserClaimException;
+use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

@@ -1,14 +1,14 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\DependencyInjection;
+namespace ItkDev\AzureAdDeltaSyncBundle\DependencyInjection;
 
-use ItkDev\AdgangsstyringBundle\Command\AccessControlCommand;
+use ItkDev\AzureAdDeltaSyncBundle\Command\AccessControlCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class ItkDevAdgangsstyringExtension extends Extension
+class ItkDevAzureAdDeltaSyncExtension extends Extension
 {
 
     /**
@@ -24,10 +24,10 @@ class ItkDevAdgangsstyringExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $options = [
-            'tenant_id' => $config['adgangsstyring_options']['tenant_id'],
-            'client_id' => $config['adgangsstyring_options']['client_id'],
-            'client_secret' => $config['adgangsstyring_options']['client_secret'],
-            'group_id' => $config['adgangsstyring_options']['group_id'],
+            'tenant_id' => $config['azure_ad_delta_sync_options']['tenant_id'],
+            'client_id' => $config['azure_ad_delta_sync_options']['client_id'],
+            'client_secret' => $config['azure_ad_delta_sync_options']['client_secret'],
+            'group_id' => $config['azure_ad_delta_sync_options']['group_id'],
         ];
 
         $definition = $container->getDefinition(AccessControlCommand::class);
@@ -42,6 +42,6 @@ class ItkDevAdgangsstyringExtension extends Extension
      */
     public function getAlias()
     {
-        return 'itkdev_adgangsstyring';
+        return 'itkdev_azure_ad_delta_sync';
     }
 }

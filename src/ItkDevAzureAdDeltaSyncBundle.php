@@ -1,11 +1,11 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle;
+namespace ItkDev\AzureAdDeltaSyncBundle;
 
-use ItkDev\AdgangsstyringBundle\DependencyInjection\ItkDevAdgangsstyringExtension;
+use ItkDev\AzureAdDeltaSyncBundle\DependencyInjection\ItkDevAzureAdDeltaSyncExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ItkDevAdgangsstyringBundle extends Bundle
+class ItkDevAzureAdDeltaSyncBundle extends Bundle
 {
     /**
      * {@inheritdoc}
@@ -15,7 +15,7 @@ class ItkDevAdgangsstyringBundle extends Bundle
     public function getContainerExtension()
     {
         if (null === $this->extension) {
-            $this->extension = new ItkDevAdgangsstyringExtension();
+            $this->extension = new ItkDevAzureAdDeltaSyncExtension();
         }
 
         return $this->extension;

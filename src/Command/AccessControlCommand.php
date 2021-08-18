@@ -1,11 +1,11 @@
 <?php
 
-namespace ItkDev\AdgangsstyringBundle\Command;
+namespace ItkDev\AzureAdDeltaSyncBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
-use ItkDev\Adgangsstyring\Controller;
-use ItkDev\AdgangsstyringBundle\Handler\UserHandler;
+use ItkDev\AzureAdDeltaSync\Controller;
+use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +20,7 @@ class AccessControlCommand extends Command
     private $user_property;
     private $user_claim_property;
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'adgangsstyring:run';
+    protected static $defaultName = 'delta-sync:run';
 
     public function __construct(EventDispatcherInterface $dispatcher, array $options, EntityManagerInterface $em, string $user_class, string $user_property, string $user_claim_property, string $name = null)
     {
