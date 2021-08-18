@@ -25,7 +25,7 @@ class UserHandlerTest extends TestCase
         $this->setupUserHandlerArguments();
     }
 
-    public function testStart()
+    public function testCollectUsersForDeletionList()
     {
         // Create a UserHandler
         $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
@@ -56,9 +56,9 @@ class UserHandlerTest extends TestCase
             ->method('findAll')
             ->willReturn($mockUsers);
 
-        $handler->start();
+        $handler->collectUsersForDeletionList();
 
-        // Get cached system users set during start()
+        // Get cached system users set during collectUsersForDeletionList()
         $cache = new FilesystemAdapter();
         $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
         $actual= $systemUsersItem->get();
@@ -71,9 +71,9 @@ class UserHandlerTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testRetainUsers()
+    public function testRemoveUsersFromDeletionList()
     {
-        // Cache some usernames for retainUsers() to use
+        // Cache some usernames for removeUsersFromDeletionList() to use
         $cache = new FilesystemAdapter();
         $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
 
@@ -93,9 +93,9 @@ class UserHandlerTest extends TestCase
 
         $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
-        $handler->retainUsers($users);
+        $handler->removeUsersFromDeletionList($users);
 
-        // Get cached list of users after retainUsers()
+        // Get cached list of users after removeUsersFromDeletionList()
         $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
         $actual = $systemUsersItem->get();
 
@@ -107,7 +107,7 @@ class UserHandlerTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testCommit()
+    public function testCommitDeletionList()
     {
         $this->mockDispatcher
             ->expects($this->once())
@@ -115,7 +115,7 @@ class UserHandlerTest extends TestCase
 
         $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
-        $handler->commit();
+        $handler->commitDeletionList();
     }
 
     public function testUserClaimExceptionThrown()
@@ -131,7 +131,7 @@ class UserHandlerTest extends TestCase
 
         $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
 
-        $handler->retainUsers($users);
+        $handler->removeUsersFromDeletionList($users);
     }
 
     private function setupUserHandlerArguments()
