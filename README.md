@@ -1,13 +1,13 @@
-# Adgangsstyring Bundle
+# Azure AD Delta Sync Symfony Bundle
 
-Symfony bundle for user access control via Azure AD.
+Symfony bundle for Azure AD Delta Sync.
 
 ## Installation
 
 To install run
 
 ```shell
-composer require itk-dev/adgangsstyring-bundle
+composer require itk-dev/azure-ad-delta-sync-bundle
 ```
 
 If you wish to run the coding standard tests for Markdown files
