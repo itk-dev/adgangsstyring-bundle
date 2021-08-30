@@ -10,8 +10,6 @@ To install run
 composer require itk-dev/azure-ad-delta-sync-bundle
 ```
 
-If you wish to run the coding standard tests for Markdown files
-
 ```shell
 yarn install
 ```
@@ -26,32 +24,30 @@ Microsoft groups, and the above mentioned `User` entity:
 
 ### Variable configuration
 
-In `/config/packages` you need the following `itkdev_adgangsstyring.yaml` file:
+In `/config/packages` you need the following `itkdev_azure_ad_delta_sync.yaml` file:
 
 ```yaml
-itkdev_adgangsstyring:
-  adgangsstyring_options:
+itkdev_azure_ad_delta_sync:
+  azure_ad_delta_sync_options:
     tenant_id: 'some_tenant_id'
     client_id: 'some_client_id'
     client_secret: 'some_client_secret'
     group_id: 'some_group_id'
   user_options:
-    user_class: 'App\Entity\User'
-    user_property: 'some_user_property'
-    user_claim_property: 'some_user_claim_property'
+    system_user_class: 'App\Entity\User'
+    system_user_property: 'some_user_property'
+    azure_ad_user_property: 'some_azure_ad_user_property'
 ```
 
-Note that `user_property` and `user_claim_property`
-should be unique properties and needs to match up.
+Here `azure_ad_user_property` should be a property on the
+Azure AD user that is equivalent to the `system_user_property`
+and that is unique for the system user.
 
 ### Listening to DeleteUserEvent
 
 The bundle dispatches a `DeleteUserEvent` containing
-a list of users for potential removal. This is a list of users
-whom are registered in the using system, but are not assigned
-to the AD group. This means the bundle does not exclude users
-having specific characteristics, i.e. super admin users or
-akin may be among the users the bundle provides.
+a list of user properties (`system_user_property`) for potential removal. The using system should
+implement logic to ensure these users are not deleted unintentionally.
 
 Therefore, the using system will need to implement an EventListener
 or EventSubscriber that listens to the `DeleteUserEvent`.
@@ -88,7 +84,7 @@ class DeleteUserEventSubscriber implements EventSubscriberInterface
 To start the flow the using system execute the follow CLI command:
 
 ```shell
-php bin/console adgangsstyring:run
+php bin/console delta-sync:run
 ```
 
 It is up to using system to decide how and when to run

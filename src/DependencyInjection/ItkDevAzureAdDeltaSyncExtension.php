@@ -32,9 +32,9 @@ class ItkDevAzureAdDeltaSyncExtension extends Extension
 
         $definition = $container->getDefinition(AccessControlCommand::class);
         $definition->replaceArgument('$options', $options);
-        $definition->replaceArgument('$user_class', $config['user_options']['user_class']);
-        $definition->replaceArgument('$user_property', $config['user_options']['user_property']);
-        $definition->replaceArgument('$user_claim_property', $config['user_options']['user_claim_property']);
+        $definition->replaceArgument('$user_class', $config['user_options']['system_user_class']);
+        $definition->replaceArgument('$user_property', $config['user_options']['system_user_property']);
+        $definition->replaceArgument('$user_claim_property', $config['user_options']['azure_ad_user_property']);
     }
 
     /**
