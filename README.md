@@ -10,10 +10,6 @@ To install run
 composer require itk-dev/azure-ad-delta-sync-bundle
 ```
 
-```shell
-yarn install
-```
-
 ## Usage
 
 Before being able to use the bundle, you must have
@@ -39,15 +35,16 @@ itkdev_azure_ad_delta_sync:
     azure_ad_user_property: 'some_azure_ad_user_property'
 ```
 
-Here `azure_ad_user_property` should be a property on the
+Here the `azure_ad_user_property` should be a property on the
 Azure AD user that is equivalent to the `system_user_property`
 and that is unique for the system user.
 
 ### Listening to DeleteUserEvent
 
 The bundle dispatches a `DeleteUserEvent` containing
-a list of user properties (`system_user_property`) for potential removal. The using system should
-implement logic to ensure these users are not deleted unintentionally.
+a list of user properties (`system_user_property`) for potential removal.
+The using system should implement logic to ensure
+these users are not deleted unintentionally.
 
 Therefore, the using system will need to implement an EventListener
 or EventSubscriber that listens to the `DeleteUserEvent`.
@@ -59,7 +56,7 @@ or EventSubscriber that listens to the `DeleteUserEvent`.
 
 namespace App\EventSubscriber;
 
-use ItkDev\AdgangsstyringBundle\Event\DeleteUserEvent;
+use ItkDev\AzureAdDeltaSyncBundle\Event\DeleteUserEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DeleteUserEventSubscriber implements EventSubscriberInterface
@@ -87,7 +84,7 @@ To start the flow the using system execute the follow CLI command:
 php bin/console delta-sync:run
 ```
 
-It is up to using system to decide how and when to run
+It is up to the using system to decide how and when to run
 this command.
 
 ## Development Setup
