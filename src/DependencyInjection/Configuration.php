@@ -10,7 +10,7 @@ class Configuration implements ConfigurationInterface
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('itk_dev_azure_ad_delta_sync');
+        $treeBuilder = new TreeBuilder('itkdev_azure_ad_delta_sync');
 
         $treeBuilder->getRootNode()
             ->children()
