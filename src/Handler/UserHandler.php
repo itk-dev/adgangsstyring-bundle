@@ -116,7 +116,13 @@ class UserHandler implements HandlerInterface
         $deletionListItem = $this->cache->getItem('azure_ad_delta_sync.deletion_list');
         $deletionList = $deletionListItem->get();
 
-        $accessControlEvent = new DeleteUserEvent($deletionList);
-        $this->dispatcher->dispatch($accessControlEvent);
+        $event = $this->createDeleteUserEvent($deletionList);
+
+        $this->dispatcher->dispatch($event);
+    }
+
+    public function createDeleteUserEvent($deletionList): DeleteUserEvent
+    {
+        return new DeleteUserEvent($deletionList);
     }
 }

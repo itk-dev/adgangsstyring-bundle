@@ -4,6 +4,7 @@ namespace ItkDev\AzureAdDeltaSyncBundle\Tests;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use ItkDev\AzureAdDeltaSyncBundle\Event\DeleteUserEvent;
 use ItkDev\AzureAdDeltaSyncBundle\Exception\AzureUserException;
 use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use PHPUnit\Framework\TestCase;
@@ -141,15 +142,51 @@ class UserHandlerTest extends TestCase
 
     public function testCommitDeletionList()
     {
+        // Mock cache some usernames
         $this->setUpMockCache();
+
+        $mockProperties = [];
+        $mockProperties[0] = 'someUsername1';
+        $mockProperties[1] = 'someUsername2';
+
+        $mockDeleteEvent = $this->createMock(DeleteUserEvent::class);
+        $mockDeleteEvent->setData($mockProperties);
 
         $this->mockDispatcher
             ->expects($this->once())
-            ->method('dispatch');
+            ->method('dispatch')
+            ->with($mockDeleteEvent);
 
-        $handler = new UserHandler($this->mockCache, $this->mockDispatcher, $this->mockEntityManager, $this->mockSystemUserClass, $this->mockSystemUserProperty, $this->mockAzureUserProperty);
+        // Keep original commitDeletionList method but mock createDeleteUserEvent to allow for test
+        $handler = $this->getMockBuilder(UserHandler::class)
+            ->setMethodsExcept(['commitDeletionList'])
+            ->setConstructorArgs([
+                $this->mockCache,
+                $this->mockDispatcher,
+                $this->mockEntityManager,
+                $this->mockSystemUserClass,
+                $this->mockSystemUserProperty,
+                $this->mockAzureUserProperty,
+            ])
+            ->getMock();
+
+        $handler->method('createDeleteUserEvent')->willReturn($mockDeleteEvent);
 
         $handler->commitDeletionList();
+    }
+
+    public function testCreateDeleteUserEvent() {
+        $handler = new UserHandler($this->mockCache, $this->mockDispatcher, $this->mockEntityManager, $this->mockSystemUserClass, $this->mockSystemUserProperty, $this->mockAzureUserProperty);
+
+        $mockProperties = [];
+        $mockProperties[0] = 'someUsername1';
+        $mockProperties[1] = 'someUsername2';
+
+        $event = $handler->createDeleteUserEvent($mockProperties);
+
+        $this->assertEquals(DeleteUserEvent::class, get_class($event));
+        $this->assertEquals($mockProperties, $event->getData());
+
     }
 
     private function setUpUserHandlerArguments()
