@@ -45,6 +45,15 @@ class Configuration implements ConfigurationInterface
                             ->cannotBeEmpty()->end()
                     ->end()
                 ->end()
+                ->arrayNode('cache_options')
+                ->isRequired()
+                    ->children()
+                        ->scalarNode('cache_pool')
+                            ->info('Method for caching')
+                            ->defaultValue('cache.app')
+                            ->cannotBeEmpty()->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

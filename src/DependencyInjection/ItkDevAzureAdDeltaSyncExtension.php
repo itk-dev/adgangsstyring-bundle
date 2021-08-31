@@ -9,6 +9,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ItkDevAzureAdDeltaSyncExtension extends Extension
 {
@@ -36,6 +37,7 @@ class ItkDevAzureAdDeltaSyncExtension extends Extension
         $definition->replaceArgument('$options', $options);
 
         $definition = $container->getDefinition(UserHandler::class);
+        $definition->replaceArgument('$cache', new Reference($config['cache_options']['cache_pool']));
         $definition->replaceArgument('$user_class', $config['user_options']['system_user_class']);
         $definition->replaceArgument('$user_property', $config['user_options']['system_user_property']);
         $definition->replaceArgument('$user_claim_property', $config['user_options']['azure_ad_user_property']);

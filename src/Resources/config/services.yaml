@@ -21,6 +21,7 @@ services:
 
     ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler:
         arguments:
+            $cache: ~
             $user_class: ~
             $user_property: ~
             $user_claim_property: ~

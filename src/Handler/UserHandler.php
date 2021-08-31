@@ -7,6 +7,7 @@ use ItkDev\AzureAdDeltaSync\Handler\HandlerInterface;
 use ItkDev\AzureAdDeltaSyncBundle\Event\DeleteUserEvent;
 use ItkDev\AzureAdDeltaSyncBundle\Exception\UserClaimException;
 use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -31,7 +32,7 @@ class UserHandler implements HandlerInterface
      */
     private $user_property;
     /**
-     * @var FilesystemAdapter
+     * @var AdapterInterface
      */
     private $cache;
     /**
@@ -39,9 +40,9 @@ class UserHandler implements HandlerInterface
      */
     private $user_claim_property;
 
-    public function __construct(EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $user_class, string $user_property, string $user_claim_property)
+    public function __construct(AdapterInterface $cache, EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $user_class, string $user_property, string $user_claim_property)
     {
-        $this->cache = new FilesystemAdapter();
+        $this->cache = $cache;
         $this->dispatcher = $dispatcher;
         $this->em = $em;
         $this->user_class = $user_class;
@@ -58,11 +59,9 @@ class UserHandler implements HandlerInterface
         $repository = $this->em->getRepository($this->user_class);
         $users = $repository->findAll();
 
-        // Create PropertyAccessor
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-        // setup cache
-        $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
+        $systemUsers = $this->cache->getItem('azure_ad_delta_sync.system_users');
 
         // Array for users marked for potential removal
         $systemUsersArray = [];
@@ -85,7 +84,7 @@ class UserHandler implements HandlerInterface
     public function removeUsersFromDeletionList(array $users): void
     {
         // Get array users in system
-        $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
+        $systemUsers = $this->cache->getItem('azure_ad_delta_sync.system_users');
         $systemUsersArray = $systemUsers->get();
 
         // Run through users in group and delete from system users array
@@ -112,7 +111,7 @@ class UserHandler implements HandlerInterface
     public function commitDeletionList(): void
     {
         // Get array users in system whom remain
-        $systemUsers = $this->cache->getItem('adgangsstyring.system_users');
+        $systemUsers = $this->cache->getItem('azure_ad_delta_sync.system_users');
         $systemUsersArray = $systemUsers->get();
 
         // Dispatch new event with remaining list
