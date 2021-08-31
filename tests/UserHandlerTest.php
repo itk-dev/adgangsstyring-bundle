@@ -7,28 +7,32 @@ use Doctrine\Persistence\ObjectRepository;
 use ItkDev\AzureAdDeltaSyncBundle\Exception\AzureUserException;
 use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Psr\Cache\CacheItemInterface;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class UserHandlerTest extends TestCase
 {
+    private $mockCache;
     private $mockDispatcher;
     private $mockEntityManager;
-    private $mockUserClassName;
-    private $mockUserProperty;
-    private $mockUserClaimProperty;
+    private $mockSystemUserClass;
+    private $mockSystemUserProperty;
+    private $mockAzureUserProperty;
+    private $mockDeletionList;
+
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->setupUserHandlerArguments();
+        $this->setUpUserHandlerArguments();
     }
 
     public function testCollectUsersForDeletionList()
     {
         // Create a UserHandler
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
+        $handler = new UserHandler($this->mockCache, $this->mockDispatcher, $this->mockEntityManager, $this->mockSystemUserClass, $this->mockSystemUserProperty, $this->mockAzureUserProperty);
 
         // Create mock Repository
         $mockRepository = $this->createMock(ObjectRepository::class);
@@ -36,18 +40,18 @@ class UserHandlerTest extends TestCase
         $this->mockEntityManager
             ->expects($this->once())
             ->method('getRepository')
-            ->with($this->mockUserClassName)
+            ->with($this->mockSystemUserClass)
             ->willReturn($mockRepository);
 
         // Create mock Users
         $mockUsers = [];
 
         $mockUsers[0] = (object) [
-            $this->mockUserProperty => 'someUsername1',
+            $this->mockSystemUserProperty => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ];
         $mockUsers[1] = (object) [
-            $this->mockUserProperty => 'someUsername2',
+            $this->mockSystemUserProperty => 'someUsername2',
             'someOtherProperty' => 'someOtherProperty2'
         ];
 
@@ -56,90 +60,124 @@ class UserHandlerTest extends TestCase
             ->method('findAll')
             ->willReturn($mockUsers);
 
+        // Create mock properties
+        $mockProperties = [];
+        $mockProperties[0] = 'someUsername1';
+        $mockProperties[1] = 'someUsername2';
+
+        $mockDeletionList = $this->createMock(CacheItemInterface::class);
+
+        $this->mockCache
+            ->expects($this->once())
+            ->method('getItem')
+            ->with('azure_ad_delta_sync.deletion_list')
+            ->willReturn($mockDeletionList);
+
+        $mockDeletionList
+            ->expects($this->once())
+            ->method('set')
+            ->with($mockProperties);
+
+        $this->mockCache
+            ->expects($this->once())
+            ->method('save')
+            ->with($mockDeletionList);
+
+
         $handler->collectUsersForDeletionList();
-
-        // Get cached system users set during collectUsersForDeletionList()
-        $cache = new FilesystemAdapter();
-        $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
-        $actual= $systemUsersItem->get();
-
-        // Create expected result
-        $expected = [];
-        $expected[0] = 'someUsername1';
-        $expected[1] = 'someUsername2';
-
-        $this->assertEquals($expected, $actual);
     }
 
     public function testRemoveUsersFromDeletionList()
     {
-        // Cache some usernames for removeUsersFromDeletionList() to use
-        $cache = new FilesystemAdapter();
-        $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
-
-        $testCachedUsers = [];
-        array_push($testCachedUsers, 'someUsername1');
-        array_push($testCachedUsers, 'someUsername2');
-
-        $systemUsersItem->set($testCachedUsers);
-        $cache->save($systemUsersItem);
+        // Mock cache some usernames for removeUsersFromDeletionList() to use
+        $this->setUpMockCache();
 
         // Mock users to be removed from cached list
-        $users = [];
-        array_push($users, [
-            'mockUserClaimProperty' => 'someUsername1',
+        $mockUsers = [];
+        array_push($mockUsers, [
+            'mockAzureUserProperty' => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ]);
-
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
-
-        $handler->removeUsersFromDeletionList($users);
-
-        // Get cached list of users after removeUsersFromDeletionList()
-        $systemUsersItem = $cache->getItem('adgangsstyring.system_users');
-        $actual = $systemUsersItem->get();
 
         // Create expected list
         $expected = [];
         // Notice the key being 1, as we dont re-index the array
         $expected[1] = 'someUsername2';
 
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testCommitDeletionList()
-    {
-        $this->mockDispatcher
+        $this->mockDeletionList
             ->expects($this->once())
-            ->method('dispatch');
+            ->method('set')
+            ->with($expected);
 
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
+        $this->mockCache
+            ->expects($this->once())
+            ->method('save')
+            ->with($this->mockDeletionList);
 
-        $handler->commitDeletionList();
+        $handler = new UserHandler($this->mockCache, $this->mockDispatcher, $this->mockEntityManager, $this->mockSystemUserClass, $this->mockSystemUserProperty, $this->mockAzureUserProperty);
+
+        $handler->removeUsersFromDeletionList($mockUsers);
     }
 
     public function testUserClaimExceptionThrown()
     {
         $this->expectException(AzureUserException::class);
 
+        // Mock cache some usernames for removeUsersFromDeletionList() to use
+        $this->setUpMockCache();
+
         // Mock users to be removed from cached list
         $users = [];
+
         array_push($users, [
-            'mockUserClaimPropertyWrong' => 'someUsername1',
+            'mockAzureUserPropertyWrong' => 'someUsername1',
             'someOtherProperty' => 'someOtherProperty1',
         ]);
 
-        $handler = new UserHandler($this->mockDispatcher, $this->mockEntityManager, $this->mockUserClassName, $this->mockUserProperty, $this->mockUserClaimProperty);
+        $handler = new UserHandler($this->mockCache, $this->mockDispatcher, $this->mockEntityManager, $this->mockSystemUserClass, $this->mockSystemUserProperty, $this->mockAzureUserProperty);
 
         $handler->removeUsersFromDeletionList($users);
     }
 
-    private function setupUserHandlerArguments()
+    public function testCommitDeletionList()
     {
+        $this->setUpMockCache();
+
+        $this->mockDispatcher
+            ->expects($this->once())
+            ->method('dispatch');
+
+        $handler = new UserHandler($this->mockCache, $this->mockDispatcher, $this->mockEntityManager, $this->mockSystemUserClass, $this->mockSystemUserProperty, $this->mockAzureUserProperty);
+
+        $handler->commitDeletionList();
+    }
+
+    private function setUpUserHandlerArguments()
+    {
+        $this->mockCache = $this->createMock(AdapterInterface::class);
         $this->mockDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->mockEntityManager = $this->createMock(EntityManagerInterface::class);
-        $this->mockUserClassName = 'mockUserClassName';
-        $this->mockUserProperty = 'mockUserProperty';
-        $this->mockUserClaimProperty = 'mockUserClaimProperty';
+        $this->mockSystemUserClass = 'mockSystemUserClass';
+        $this->mockSystemUserProperty = 'mockSystemUserProperty';
+        $this->mockAzureUserProperty = 'mockAzureUserProperty';
+    }
+
+    private function setUpMockCache() {
+        $mockProperties = [];
+        $mockProperties[0] = 'someUsername1';
+        $mockProperties[1] = 'someUsername2';
+
+        $this->mockDeletionList = $this->createMock(CacheItemInterface::class);
+
+        $this->mockCache
+            ->expects($this->once())
+            ->method('getItem')
+            ->with('azure_ad_delta_sync.deletion_list')
+            ->willReturn($this->mockDeletionList);
+
+        $this->mockDeletionList
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($mockProperties);
     }
 }
