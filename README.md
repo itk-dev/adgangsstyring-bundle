@@ -33,6 +33,8 @@ itkdev_azure_ad_delta_sync:
     system_user_class: 'App\Entity\User'
     system_user_property: 'some_user_property'
     azure_ad_user_property: 'some_azure_ad_user_property'
+  cache_options:
+    cache_pool: 'cache.app'
 ```
 
 Here the `azure_ad_user_property` should be a property on the
@@ -103,7 +105,7 @@ We use PHPUnit for unit testing. To run the tests:
 
 ```shell
 docker compose exec phpfpm composer install
- docker compose exec phpfpm ./vendor/bin/phpunit tests
+docker compose exec phpfpm ./vendor/bin/phpunit tests
 ```
 
 The test suite uses [Mocks](https://phpunit.de/manual/6.5/en/test-doubles.html)
