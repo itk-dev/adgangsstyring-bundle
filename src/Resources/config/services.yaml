@@ -22,9 +22,9 @@ services:
     ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler:
         arguments:
             $cache: ~
-            $user_class: ~
-            $user_property: ~
-            $user_claim_property: ~
+            $system_user_class: ~
+            $system_user_property: ~
+            $azure_ad_user_property: ~
 
     ItkDev\AzureAdDeltaSync\Controller:
         arguments:

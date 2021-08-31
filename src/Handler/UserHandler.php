@@ -8,115 +8,115 @@ use ItkDev\AzureAdDeltaSyncBundle\Event\DeleteUserEvent;
 use ItkDev\AzureAdDeltaSyncBundle\Exception\UserClaimException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class UserHandler implements HandlerInterface
 {
+    private EventDispatcherInterface $dispatcher;
+    private EntityManagerInterface $em;
+    private string $system_user_class;
+    private string $system_user_property;
+    private AdapterInterface $cache;
+    private string $azure_ad_user_property;
 
     /**
-     * @var EventDispatcherInterface
+     * UserHandler constructor.
+     *
+     * @param AdapterInterface $cache
+     *   Cache adapter for caching users
+     * @param EventDispatcherInterface $dispatcher
+     *   Event Dispatcher for dispatching events
+     * @param EntityManagerInterface $em
+     *   Entity Manager for collecting system users
+     * @param string $system_user_class
+     *   System User class
+     * @param string $system_user_property
+     *   System unique user property
+     * @param string $azure_ad_user_property
+     *   Azure AD User property
      */
-    private $dispatcher;
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-    /**
-     * @var string
-     */
-    private $user_class;
-    /**
-     * @var string
-     */
-    private $user_property;
-    /**
-     * @var AdapterInterface
-     */
-    private $cache;
-    /**
-     * @var string
-     */
-    private $user_claim_property;
-
-    public function __construct(AdapterInterface $cache, EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $user_class, string $user_property, string $user_claim_property)
+    public function __construct(AdapterInterface $cache, EventDispatcherInterface $dispatcher, EntityManagerInterface $em, string $system_user_class, string $system_user_property, string $azure_ad_user_property)
     {
         $this->cache = $cache;
         $this->dispatcher = $dispatcher;
         $this->em = $em;
-        $this->user_class = $user_class;
-        $this->user_property = $user_property;
-        $this->user_claim_property = $user_claim_property;
+        $this->system_user_class = $system_user_class;
+        $this->system_user_property = $system_user_property;
+        $this->azure_ad_user_property = $azure_ad_user_property;
     }
 
     /**
+     * Collects users for deletion.
+     *
      * @throws InvalidArgumentException
      */
     public function collectUsersForDeletionList(): void
     {
-        // Get all users in system
-        $repository = $this->em->getRepository($this->user_class);
+        $repository = $this->em->getRepository($this->system_user_class);
         $users = $repository->findAll();
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-        $systemUsers = $this->cache->getItem('azure_ad_delta_sync.system_users');
+        // Cache for users marked for removal
+        $deletionList = $this->cache->getItem('azure_ad_delta_sync.deletion_list');
 
         // Array for users marked for potential removal
         $systemUsersArray = [];
 
         foreach ($users as $user) {
-            $userData = $propertyAccessor->getValue($user, $this->user_property);
+            $userData = $propertyAccessor->getValue($user, $this->system_user_property);
             // Add to potential removal array
             array_push($systemUsersArray, $userData);
         }
 
         // Save array of users marked for removal
-        $systemUsers->set($systemUsersArray);
-        $this->cache->save($systemUsers);
+        $deletionList->set($systemUsersArray);
+        $this->cache->save($deletionList);
     }
 
     /**
+     * Removes users from deletion list.
+     *
      * @throws UserClaimException
      * @throws InvalidArgumentException
      */
     public function removeUsersFromDeletionList(array $users): void
     {
-        // Get array users in system
-        $systemUsers = $this->cache->getItem('azure_ad_delta_sync.system_users');
-        $systemUsersArray = $systemUsers->get();
+        $deletionListItem = $this->cache->getItem('azure_ad_delta_sync.deletion_list');
+        $deletionList = $deletionListItem->get();
 
-        // Run through users in group and delete from system users array
+        $azureUsers = [];
+
+        // Run through users in group and retrieve azure_ad_user_property
         foreach ($users as $user) {
-            if (!isset($user[$this->user_claim_property])) {
-                $message = sprintf('User claim: %s, does not exist.', $this->user_claim_property);
+            if (!isset($user[$this->azure_ad_user_property])) {
+                $message = sprintf('User claim: %s, does not exist.', $this->azure_ad_user_property);
                 throw new UserClaimException($message);
             }
-            $value = $user[$this->user_claim_property];
 
-            if (($key = array_search($value, $systemUsersArray)) !== false) {
-                unset($systemUsersArray[$key]);
-            }
+            array_push($azureUsers, $user[$this->azure_ad_user_property] );
         }
 
-        // Save (modified) array of users marked for removal
-        $systemUsers->set($systemUsersArray);
-        $this->cache->save($systemUsers);
+        $intersectingUsers = array_intersect($azureUsers, $deletionList);
+        $modifiedDeletionList = array_diff($deletionList, $intersectingUsers);
+
+        // Save modified array of users marked for removal
+        $deletionListItem->set($modifiedDeletionList);
+        $this->cache->save($deletionListItem);
     }
 
     /**
+     * Dispatches DeleteUserEvent containing deletion list.
+     *
      * @throws InvalidArgumentException
      */
     public function commitDeletionList(): void
     {
-        // Get array users in system whom remain
-        $systemUsers = $this->cache->getItem('azure_ad_delta_sync.system_users');
-        $systemUsersArray = $systemUsers->get();
+        $deletionListItem = $this->cache->getItem('azure_ad_delta_sync.deletion_list');
+        $deletionList = $deletionListItem->get();
 
-        // Dispatch new event with remaining list
-        $accessControlEvent = new DeleteUserEvent($systemUsersArray);
-
+        $accessControlEvent = new DeleteUserEvent($deletionList);
         $this->dispatcher->dispatch($accessControlEvent);
     }
 }
