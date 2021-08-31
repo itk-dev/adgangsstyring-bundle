@@ -4,7 +4,7 @@ namespace ItkDev\AzureAdDeltaSyncBundle\Tests;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
-use ItkDev\AzureAdDeltaSyncBundle\Exception\UserClaimException;
+use ItkDev\AzureAdDeltaSyncBundle\Exception\AzureUserException;
 use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -120,7 +120,7 @@ class UserHandlerTest extends TestCase
 
     public function testUserClaimExceptionThrown()
     {
-        $this->expectException(UserClaimException::class);
+        $this->expectException(AzureUserException::class);
 
         // Mock users to be removed from cached list
         $users = [];

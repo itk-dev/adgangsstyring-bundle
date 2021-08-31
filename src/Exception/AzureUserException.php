@@ -4,6 +4,6 @@ namespace ItkDev\AzureAdDeltaSyncBundle\Exception;
 
 use Exception;
 
-class UserClaimException extends Exception
+class AzureUserException extends Exception
 {
 }

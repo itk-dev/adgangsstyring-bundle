@@ -5,7 +5,7 @@ namespace ItkDev\AzureAdDeltaSyncBundle\Handler;
 use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\AzureAdDeltaSync\Handler\HandlerInterface;
 use ItkDev\AzureAdDeltaSyncBundle\Event\DeleteUserEvent;
-use ItkDev\AzureAdDeltaSyncBundle\Exception\UserClaimException;
+use ItkDev\AzureAdDeltaSyncBundle\Exception\AzureUserException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -78,7 +78,7 @@ class UserHandler implements HandlerInterface
     /**
      * Removes users from deletion list.
      *
-     * @throws UserClaimException
+     * @throws AzureUserException
      * @throws InvalidArgumentException
      */
     public function removeUsersFromDeletionList(array $users): void
@@ -91,8 +91,8 @@ class UserHandler implements HandlerInterface
         // Run through users in group and retrieve azure_ad_user_property
         foreach ($users as $user) {
             if (!isset($user[$this->azure_ad_user_property])) {
-                $message = sprintf('User claim: %s, does not exist.', $this->azure_ad_user_property);
-                throw new UserClaimException($message);
+                $message = sprintf('User property: %s, does not exist.', $this->azure_ad_user_property);
+                throw new AzureUserException($message);
             }
 
             array_push($azureUsers, $user[$this->azure_ad_user_property] );
