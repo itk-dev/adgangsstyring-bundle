@@ -3,6 +3,9 @@
 namespace ItkDev\AzureAdDeltaSyncBundle\Command;
 
 use ItkDev\AzureAdDeltaSync\Controller;
+use ItkDev\AzureAdDeltaSync\Exception\DataException;
+use ItkDev\AzureAdDeltaSync\Exception\NetworkException;
+use ItkDev\AzureAdDeltaSync\Exception\TokenException;
 use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,9 +31,18 @@ class AccessControlCommand extends Command
             ->setDescription('Starts access control flow');
     }
 
+    /**
+     * @throws TokenException
+     * @throws NetworkException
+     * @throws DataException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->controller->run($this->handler);
+        try {
+            $this->controller->run($this->handler);
+        } catch (DataException | NetworkException | TokenException $e) {
+            throw $e;
+        }
 
         return Command::SUCCESS;
     }
