@@ -13,11 +13,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AccessControlCommand extends Command
 {
-    private $controller;
-    private $handler;
+    private Controller $controller;
+    private UserHandler $handler;
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'delta-sync:run';
 
+    /**
+     * AccessControlCommand constructor.
+     *
+     * @param Controller $controller
+     * @param UserHandler $handler
+     * @param string|null $name
+     */
     public function __construct(Controller $controller, UserHandler $handler, string $name = null)
     {
         $this->controller = $controller;
@@ -28,13 +35,19 @@ class AccessControlCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Starts access control flow');
+            ->setDescription('Starts the Azure AD Delta Sync flow');
     }
 
     /**
-     * @throws TokenException
-     * @throws NetworkException
+     * Executes the Azure AD Delta Sync flow
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
      * @throws DataException
+     * @throws NetworkException
+     * @throws TokenException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
