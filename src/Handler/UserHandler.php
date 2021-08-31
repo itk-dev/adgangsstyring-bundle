@@ -95,7 +95,7 @@ class UserHandler implements HandlerInterface
                 throw new AzureUserException($message);
             }
 
-            array_push($azureUsers, $user[$this->azure_ad_user_property] );
+            array_push($azureUsers, $user[$this->azure_ad_user_property]);
         }
 
         $intersectingUsers = array_intersect($azureUsers, $deletionList);
