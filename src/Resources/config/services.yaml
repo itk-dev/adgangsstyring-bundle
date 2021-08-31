@@ -14,9 +14,18 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    http.client:
+        class: Symfony\Component\HttpClient\Psr18Client
+
     ItkDev\AzureAdDeltaSyncBundle\Command\AccessControlCommand:
+
+    ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler:
         arguments:
-            $options: ~
             $user_class: ~
             $user_property: ~
             $user_claim_property: ~
+
+    ItkDev\AzureAdDeltaSync\Controller:
+        arguments:
+            $client: '@http.client'
+            $options: ~

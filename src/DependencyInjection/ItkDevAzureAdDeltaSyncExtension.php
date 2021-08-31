@@ -2,7 +2,9 @@
 
 namespace ItkDev\AzureAdDeltaSyncBundle\DependencyInjection;
 
+use ItkDev\AzureAdDeltaSync\Controller;
 use ItkDev\AzureAdDeltaSyncBundle\Command\AccessControlCommand;
+use ItkDev\AzureAdDeltaSyncBundle\Handler\UserHandler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -30,8 +32,10 @@ class ItkDevAzureAdDeltaSyncExtension extends Extension
             'group_id' => $config['azure_ad_delta_sync_options']['group_id'],
         ];
 
-        $definition = $container->getDefinition(AccessControlCommand::class);
+        $definition = $container->getDefinition(Controller::class);
         $definition->replaceArgument('$options', $options);
+
+        $definition = $container->getDefinition(UserHandler::class);
         $definition->replaceArgument('$user_class', $config['user_options']['system_user_class']);
         $definition->replaceArgument('$user_property', $config['user_options']['system_user_property']);
         $definition->replaceArgument('$user_claim_property', $config['user_options']['azure_ad_user_property']);
