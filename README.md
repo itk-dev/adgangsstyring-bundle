@@ -1,6 +1,6 @@
 # Azure AD Delta Sync Symfony Bundle
 
-Symfony bundle for Azure AD Delta Sync.
+Symfony bundle for Azure AD Delta Sync flow.
 
 ## Installation
 
@@ -16,7 +16,8 @@ Before being able to use the bundle, you must have
 your own `User` entity, `UserRepository`  and database setup.
 
 You will need to configure variables for
-Microsoft groups, and the above mentioned `User` entity:
+Microsoft groups, the above mentioned `User` entity
+and cache pool:
 
 ### Variable configuration
 
@@ -38,8 +39,9 @@ itkdev_azure_ad_delta_sync:
 ```
 
 Here the `azure_ad_user_property` should be a property on the
-Azure AD user that is equivalent to the `system_user_property`
-and that is unique for the system user.
+Azure AD user that is equivalent to the `system_user_property`,
+as this is how we compare system users with Microsoft group users.
+For this reason the comparing property must also be unique.
 
 ### Listening to DeleteUserEvent
 
@@ -126,19 +128,37 @@ for generation of test doubles.
     docker run -v ${PWD}:/app itkdev/yarn:latest check-coding-standards
     ```
 
+### GitHub Actions
+
+All code checks mentioned above are automatically run by [GitHub
+Actions](https://github.com/features/actions) when a pull request is created.
+
+To run the actions locally, install [act](https://github.com/nektos/act) and run
+
+```sh
+act -P ubuntu-latest=shivammathur/node:focal pull_request
+```
+
+Use `act -P ubuntu-latest=shivammathur/node:focal pull_request --list` to see
+individual workflow jobs that can be run, e.g.
+
+```sh
+act -P ubuntu-latest=shivammathur/node:focal pull_request --job phpcsfixer
+```
+
 ### Apply Coding Standards
 
 * PHP files (PHP_CodeSniffer)
 
     ```shell
-    ocker compose exec phpfpm composer apply-coding-standards
+    docker compose exec phpfpm composer apply-coding-standards
     ```
 
 * Markdown files (markdownlint standard rules)
 
     ```shell
     docker run -v ${PWD}:/app itkdev/yarn:latest install
-     docker run -v ${PWD}:/app itkdev/yarn:latest apply-coding-standards
+    docker run -v ${PWD}:/app itkdev/yarn:latest apply-coding-standards
     ```
 
 ## Versioning
