@@ -1,0 +1,41 @@
+{
+    "name": "itk-dev/azure-ad-delta-sync-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle that enables the Azure AD Delta Sync flow",
+    "license": "MIT",
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "symfony/framework-bundle": "^5.2",
+        "symfony/yaml": "^5.2",
+        "symfony/console": "^5.2",
+        "doctrine/orm": "^2.9",
+        "symfony/property-access": "^5.2",
+        "itk-dev/azure-ad-delta-sync": "^1.0",
+        "symfony/lock": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "ItkDev\\AzureAdDeltaSyncBundle\\": "src/"
+        }
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "phpunit/phpunit": "^9.5",
+        "escapestudios/symfony2-coding-standard": "^3.12"
+    },
+
+    "scripts": {
+        "check-coding-standards": [
+            "vendor/bin/phpcs --standard=phpcs.xml.dist"
+        ],
+        "apply-coding-standards": [
+            "vendor/bin/phpcbf --standard=phpcs.xml.dist"
+        ],
+        "install-codestandards": [
+            "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+        ],
+        "post-install-cmd": [
+            "@install-codestandards"
+        ]
+    }
+}

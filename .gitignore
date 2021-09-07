@@ -1,0 +1,16 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/src/Resources/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+composer.lock
+.idea/
+.phpcs-cache
+phpcs-report.xml
+/node_modules
